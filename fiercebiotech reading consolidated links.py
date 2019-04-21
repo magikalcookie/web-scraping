@@ -21,8 +21,8 @@ final_dict={}
 count = 0
 count_list = []
 ##If doing it one at a time, use: 
-    ##y = raw_input('Enter start index position: ')
-    ##a = content[int(y)]
+y = raw_input('Enter start index position: ')
+a = content[int(y)]
 ##If doing it all at once, use: 
     ##for a in content:
 for i in a:
