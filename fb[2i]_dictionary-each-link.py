@@ -10,8 +10,15 @@ with open('fblinks.txt', 'r') as f:
     content = f.readlines()
 content.sort()
 
-#(3) Found last '\n' @ [60295]; deleting white space
-del content[0:60296]
+#(3) Deleting "newline" ('\n') list items after sorting. Note: Not fool-proof
+tick = 0
+for item in content:
+    if item.startswith('\n'):
+        tick += 1
+    else:
+        pass
+print tick
+del content[0:tick+1]
 content = list(map(lambda x:x.strip(),content))
 
 #(4) Create dictionary of key words
@@ -26,14 +33,14 @@ a = content[int(y)]
 ##If doing it all at once, use: 
     ##for a in content:
 for i in a:
-    dash = i.find('-')
-    if dash == -1:
-        pass
-        count+=1
-    else:
-        count_list.append(count)
+   dash = i.find('-')
+   if dash == -1:
+       pass
+       count+=1
+   else:
+       count_list.append(count)
 #print count_list
-
+    
 #Append first term (minus '/')
 first = a[1:count_list[0]+0]
 #print first
@@ -41,7 +48,7 @@ if first not in final_dict:
     final_dict[first] = 1
 else:
     final_dict[first] += 1
-  
+    
 #Loop for words in between first and last
 for i in range(len(count_list)):
     mid = a[count_list[i-1]+i:count_list[i]+i]
