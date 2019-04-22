@@ -38,6 +38,7 @@ exceptions = {}
 for i in range(x, y):
     try:
         aa = a+content[i]
+        data[str(i)+'-(0)Reference'] = aa
         html = requests.get(aa)
         soup = BeautifulSoup(html.text, 'html.parser')
         #print soup.title 
@@ -62,6 +63,7 @@ for i in range(x, y):
         #time.sleep(10)
     except:
         count+=1
+        exceptions[str(i)+'-Reference'] = aa
         exceptions[str(i)+'-Exception'] = time.asctime(time.localtime(time.time()))
         continue
 
