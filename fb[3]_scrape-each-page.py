@@ -73,3 +73,14 @@ with open('exceptions.txt', 'w') as k:
 k.close()
 
 #(2b) Write dictionary to pickle
+try:
+    import cPickle as pickle
+except ImportError:  # python 3.x
+    import pickle
+
+with open('data.p', 'wb') as fp:
+    pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+
+#(3) Pickle load as 'data' variable
+##with open('data.p', 'rb') as fp:
+    ##data = pickle.load(fp)
