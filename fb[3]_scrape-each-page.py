@@ -38,22 +38,22 @@ exceptions = {}
 for i in range(x, y):
     try:
         aa = a+content[i]
-        data[str(i)+'-(0)Reference'] = aa
+        data[str(i)+'-(0)Reference'] = aa #(0)Reference
         html = requests.get(aa)
         soup = BeautifulSoup(html.text, 'html.parser')
         #print soup.title 
-        data[str(i)+'-(1)Title'] = soup.title #Title
-        for author in soup.find('footer'): #Author
+        data[str(i)+'-(1)Title'] = soup.title #(1)Title
+        for author in soup.find('footer'): #(2)Author
             author = author.find('a')
             if author == -1:
                 pass
             else:
                 #print author
                 data[str(i)+'-(2)Author'] = author
-        for date in soup.find('time'): #DateTime
+        for date in soup.find('time'): #(3)DateTime
             #print date
             data[str(i)+'-(3)DateTime'] = date
-        for text in soup.find_all('p'): #Article-body
+        for text in soup.find_all('p'): #(4)Body
             if text.get('class'):
                 pass
             else:
