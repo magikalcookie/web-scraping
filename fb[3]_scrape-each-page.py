@@ -38,29 +38,29 @@ exceptions = {}
 for i in range(x, y):
     try:
         aa = a+content[i]
-        data[str(i)+'-(0)Reference'] = aa #(0)Reference
+        data[str(i)+'-(0)Reference'] = aa
         html = requests.get(aa)
         soup = BeautifulSoup(html.text, 'html.parser')
         #print soup.title 
-        data[str(i)+'-(1)Title'] = soup.title #(1)Title
-        for author in soup.find('footer'): #(2)Author
+        data[str(i)+'-(1)Title'] = soup.title #Title
+        for author in soup.find('footer'): #Author
             author = author.find('a')
             if author == -1:
                 pass
             else:
                 #print author
                 data[str(i)+'-(2)Author'] = author
-        for date in soup.find('time'): #(3)DateTime
+        for date in soup.find('time'): #DateTime
             #print date
             data[str(i)+'-(3)DateTime'] = date
-        for text in soup.find_all('p'): #(4)Body
+        for text in soup.find_all('p'): #Article-body
             if text.get('class'):
                 pass
             else:
                 #print text
                 body.append(text)
                 data[str(i)+'-(4)Body'] = body
-        #time.sleep(10)
+        time.sleep(10)
     except:
         count+=1
         exceptions[str(i)+'-Reference'] = aa
@@ -68,7 +68,7 @@ for i in range(x, y):
         continue
 
 #(2a) Write exceptions to file
-with open('exceptions.txt', 'w') as k:
+with open('exceptions_'+str(x)+'-'+str(y)+'.txt', 'w') as k:
     print >> k, 'Total:', count, '\n', exceptions
 k.close()
 
@@ -78,7 +78,7 @@ try:
 except ImportError:  # python 3.x
     import pickle
 
-with open('data.p', 'wb') as fp:
+with open('data_'+str(x)+'-'+str(y)+'.p', 'wb') as fp:
     pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
 
 #(3) Pickle load as 'data' variable
