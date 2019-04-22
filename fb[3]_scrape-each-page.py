@@ -1,7 +1,16 @@
 #Project Milestone 4
+#Import packages needed
+import os #for step (i)
+from bs4 import BeautifulSoup #for step (1)
+import requests #for step (1)
+import time #for step (1)
+try: #for step (2b)
+    import cPickle as pickle #for step (2b)
+except ImportError:  # python 3.x
+    import pickle 
+
 #(i) Create and read file handle
 x = 'C:/Users/Acarag/OneDrive/Documents/web scraping data/fiercebiotech_biotech'
-import os
 os.chdir(x)
 print os.getcwd()
 
@@ -18,7 +27,7 @@ for item in content:
     else:
         pass
 print tick
-del content[0:tick+1]
+del content[0:tick+1] #The #+1 includes the '/\n' line too
 content = list(map(lambda x:x.strip(),content))
 
 #(1) Scrape & Build Dictionary
@@ -28,9 +37,6 @@ y = int(raw_input('Enter range (end): ')) #Example: 5
 #Note: x=0 & y=5 is [0,1,2,3,4]; next numbers should be x=5 & y=10 to check [5,6,7,8,9].
 #Note: content[y] does not work if value for len(content) is inputed; last value is len(content)-1.
 #Beautiful Soup instruction: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-from bs4 import BeautifulSoup
-import requests
-import time
 data = {}
 body = []
 count = 0
@@ -74,12 +80,13 @@ k.close()
 
 #(2b) Write dictionary to pickle
 try:
-    import cPickle as pickle
-except ImportError:  # python 3.x
-    import pickle
-
-with open('data_'+str(x)+'-'+str(y)+'.p', 'wb') as fp:
-    pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('data_'+str(x)+'-'+str(y)+'.p', 'wb') as fp:
+        pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+    fp.close()
+except:
+    with open('data_'+str(x)+'-'+str(y)+'.txt', 'w') as t:
+        print >> t, data
+    t.close()
 
 #(3) Pickle load as 'data' variable
 ##with open('data.p', 'rb') as fp:
