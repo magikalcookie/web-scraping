@@ -1,3 +1,5 @@
+####Note: Check out selenium module for python to figure out how to scrape javascript websites
+###https://selenium-python.readthedocs.io/
 #Project Milestone 4
 #Import packages needed
 import os #for step (i)
