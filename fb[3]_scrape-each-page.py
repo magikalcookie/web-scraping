@@ -12,7 +12,7 @@ except ImportError:  # python 3.x
     import pickle 
 
 #(i) Create and read file handle
-x = 'C:/Users/Acarag/OneDrive/Documents/web scraping data/fiercebiotech_biotech'
+x = 'C:/Users/Acarag/Desktop/webscraping' #change '\' to '/'
 os.chdir(x)
 print os.getcwd()
 
@@ -49,7 +49,9 @@ for i in range(x, y):
         data[str(i)+'-(0)Reference'] = aa
         html = requests.get(aa)
         soup = BeautifulSoup(html.text, 'html.parser')
-        #print soup.title 
+        #print soup.title
+        soup.title = str(soup.title)
+        soup.title = soup.title[7:-8] 
         data[str(i)+'-(1)Title'] = soup.title #Title
         for author in soup.find('footer'): #Author
             author = author.find('a')
@@ -57,15 +59,21 @@ for i in range(x, y):
                 pass
             else:
                 #print author
-                data[str(i)+'-(2)Author'] = author
+                author1 = str(author)
+                author2 = author1[:-4]
+                author3 = author2.find('>')
+                author4 = author2[author3+1:]
+                data[str(i)+'-(2)Author'] = author4
         for date in soup.find('time'): #DateTime
             #print date
-            data[str(i)+'-(3)DateTime'] = date
+            data[str(i)+'-(3)DateTime'] = str(date)
         for text in soup.find_all('p'): #Article-body
             if text.get('class'):
                 pass
             else:
                 #print text
+                text = str(text)
+                text = text[3:-4]
                 body.append(text)
                 data[str(i)+'-(4)Body'] = body
         time.sleep(10)
@@ -81,14 +89,19 @@ with open('exceptions_'+str(x)+'-'+str(y)+'.txt', 'w') as k:
 k.close()
 
 #(2b) Write dictionary to pickle
-try:
-    with open('data_'+str(x)+'-'+str(y)+'.p', 'wb') as fp:
-        pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
-    fp.close()
-except:
-    with open('data_'+str(x)+'-'+str(y)+'.txt', 'w') as t:
-        print >> t, data
-    t.close()
+#try:
+#    with open('data_'+str(x)+'-'+str(y)+'.p', 'wb') as fp:
+#        pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+#    fp.close()
+#except:
+#    with open('data_'+str(x)+'-'+str(y)+'.txt', 'w') as t:
+#        print >> t, data
+#    t.close()
+
+#(2c) Write dictionary to text file only
+with open('data_'+str(x)+'-'+str(y)+'.txt', 'w') as t:
+    print >> t, data
+t.close()
 
 #(3) Pickle load as 'data' variable
 ##with open('data.p', 'rb') as fp:
