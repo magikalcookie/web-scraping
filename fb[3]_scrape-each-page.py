@@ -40,11 +40,11 @@ y = int(raw_input('Enter range (end): ')) #Example: 5
 #Note: content[y] does not work if value for len(content) is inputed; last value is len(content)-1.
 #Beautiful Soup instruction: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 data = {}
-body = []
 count = 0
 exceptions = {}
 for i in range(x, y):
     try:
+        body = []
         aa = a+content[i]
         data[str(i)+'-(0)Reference'] = aa
         html = requests.get(aa)
