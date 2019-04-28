@@ -10,6 +10,8 @@ try: #for step (2b)
     import cPickle as pickle #for step (2b)
 except ImportError:  # python 3.x
     import pickle 
+import csv
+import json
 
 #(i) Create and read file handle
 x = 'C:/Users/Acarag/Desktop/webscraping' #change '\' to '/'
@@ -32,6 +34,10 @@ print tick
 del content[0:tick+1] #The #+1 includes the '/\n' line too
 content = list(map(lambda x:x.strip(),content))
 
+#(iv) Create excel/csv file to store data
+csvout = open('fiercebiotech_mycode.csv', 'a')
+writer = csv.writer(csvout)
+
 #(1) Scrape & Build Dictionary
 a = 'https://www.fiercebiotech.com'
 x = int(raw_input('Enter range (beg): ')) #Example: 0
@@ -45,12 +51,13 @@ exceptions = {}
 for i in range(x, y):
     try:
         body = []
+        bodystring = ''
         aa = a+content[i]
         data[str(i)+'-(0)Reference'] = aa
         html = requests.get(aa)
         soup = BeautifulSoup(html.text, 'html.parser')
         #print soup.title
-        soup.title = str(soup.title)
+        soup.title = soup.title.encode('utf-8')
         soup.title = soup.title[7:-8] 
         data[str(i)+'-(1)Title'] = soup.title #Title
         for author in soup.find('footer'): #Author
@@ -59,26 +66,29 @@ for i in range(x, y):
                 pass
             else:
                 #print author
-                author1 = str(author)
+                author1 = author.encode('utf-8')
                 author2 = author1[:-4]
                 author3 = author2.find('>')
                 author4 = author2[author3+1:]
                 data[str(i)+'-(2)Author'] = author4
         for date in soup.find('time'): #DateTime
             #print date
-            data[str(i)+'-(3)DateTime'] = str(date)
+            data[str(i)+'-(3)DateTime'] = date.encode('utf-8')
         for text in soup.find_all('p'): #Article-body
             if text.get('class'):
                 pass
             else:
                 #print text
-                text = str(text)
+                text = text.encode('utf-8')
                 text = text[3:-4]
+                bodystring += text+' '
                 body.append(text)
                 data[str(i)+'-(4)Body'] = body
+        writer.writerow([i, aa, soup.title, author4, date.encode('utf-8'), bodystring])
         time.sleep(10)
-    except:
+    except Exception as e:
         count+=1
+        exceptions[str(i)+'-Error'] = e
         exceptions[str(i)+'-Reference'] = aa
         exceptions[str(i)+'-Exception'] = time.asctime(time.localtime(time.time()))
         continue
@@ -88,6 +98,7 @@ with open('exceptions_'+str(x)+'-'+str(y)+'.txt', 'w') as k:
     print >> k, 'Total:', count, '\n', exceptions
 k.close()
 
+csvout.close()
 #(2b) Write dictionary to pickle
 #try:
 #    with open('data_'+str(x)+'-'+str(y)+'.p', 'wb') as fp:
