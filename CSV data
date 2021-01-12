@@ -1,0 +1,124 @@
+#Step 0: Import modules
+from bs4 import BeautifulSoup
+import requests
+import csv
+import os
+import time
+
+#Step 1: Create working directory
+os.chdir('C:\Users\Acarag\Desktop\webscraping')
+
+#Step 2: Read lines of fblinks file & sort
+fblinks = os.listdir(os.getcwd())[2]
+with open(fblinks) as f:
+    content = f.readlines()
+content.sort()
+
+#Step 3: Delete new lines
+tick = 0
+for item in content:
+    if item.startswith('\n'):
+        tick += 1
+    else:
+        pass
+print tick
+del content[0:tick+1]
+content = list(map(lambda x:x.strip(),content))
+
+#Step 4: Concatenate
+homepage = 'https://www.fiercebiotech.com'
+
+#Step 5: Iterate
+x = int(raw_input('Enter range (beg): ')) #Example: 0
+y = int(raw_input('Enter range (end): ')) #Example: 5
+#Note: x=0 & y=5 is [0,1,2,3,4]; next numbers should be x=5 & y=10 to check [5,6,7,8,9].
+try:
+    for i in range(x,y):
+        href = homepage + content[i]
+        request = requests.get(href)
+        soup = BeautifulSoup(request.text, 'html.parser')
+        meta = soup.find_all('meta')
+        my_dict = {}
+        data00 = i
+        data01 = ' '
+        data02 = ' '
+        data03 = ' '
+        data04 = ' '
+        data05a = ' '
+        data05b = ' '
+        data06 = ' '
+        data07 = ' '
+        data08 = ' '
+        meta_no = len(meta)
+        for j in range(len(meta)):
+            try:
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-post-id':
+                    data01 = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-link':
+                    data02 = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-pub-date':
+                    data03 = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-author':
+                    data04 = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-section':
+                    data05a = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'gtm-contenttype':
+                    data05b = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-title':
+                    data06 = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+                if meta[j].attrs.values()[1].encode('ascii','ignore') == 'parsely-tags':
+                    data08 = meta[j].attrs.values()[0].encode('ascii','ignore')
+                else:
+                    pass
+            except:
+                pass
+        my_dict.update({'00_Iteration':data00})
+        my_dict.update({'01_PostID':data01})
+        my_dict.update({'02_Hyperlink':data02})
+        my_dict.update({'03_Published':data03})
+        my_dict.update({'04_Author':data04})
+        my_dict.update({'05a_Category':data05a})
+        my_dict.update({'05b_Type':data05b})
+        my_dict.update({'06_Title':data06})
+        my_dict.update({'08_Tags':data08})
+        my_dict.update({'xx_MetaNo':meta_no})
+        body = []
+        for text in soup.find_all('p'):
+            text = str(text)
+            text = text[3:-4]
+            body.append(text)
+        my_dict.update({'07_Article':body})
+        #Convert the dictionary to a list for CSV transfer
+        my_dict_list = [my_dict]
+        #Check if this can work some time: my_dict_list = [value for (key,value) in sorted(my_dict.items())]
+        #Write the CSV file with my_dict_list
+        try:
+            #Prep the CSV file
+            csv_columns = ['00_Iteration','01_PostID','02_Hyperlink','03_Published','04_Author','05a_Category','05b_Type','06_Title','07_Article','08_Tags','xx_MetaNo']
+            csv_file = "fb_data.csv"
+            file = open(csv_file,'a')
+            with file:
+                writer = csv.DictWriter(file, fieldnames=csv_columns)
+                #writer.writeheader() #Only use when first creating the file
+                for data in my_dict_list:
+                    writer.writerow(data)
+        except IOError:
+            print("I/O error")
+        time.sleep(10)
+except:
+    pass
+    print i
